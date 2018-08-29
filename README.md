@@ -1,0 +1,1 @@
+### My personal notes from looking at different programming languages. Probably not interesting to anybody else:-)
