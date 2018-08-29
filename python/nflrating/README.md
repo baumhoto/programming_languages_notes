@@ -1,8 +1,8 @@
 quick and dirty calculation of a rating of a weeks nfl games by weighting different factors of an nfl game. (total yards, total points, absolute diff of score etc. ) Highest rating supposed to be the best.
 
-#build
+# build
 docker build -t nflrating
-#run
+# run
 docker run -it --rm --name nflrating.py nflrating
 
 # p.s.
