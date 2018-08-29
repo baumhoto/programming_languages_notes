@@ -19,6 +19,49 @@
                                    (bucket living-room)
                                    (chain garden)
                                    (frog garden)))
+;;; allowed repl commands
+(defparameter *allowed-commands* '(look walk pickup inventory))
+
+;;; custom REPL for our game
+(defun game-repl () 
+    (let ((cmd (game-read)))
+        (unless (eq (car cmd) 'quit)
+            (game-print (game-eval cmd))
+            (game-repl))))
+;;; put line in () so plauer just needs to enter walk east => (walk east)
+;;; put quote in front of parameter look 'west
+(defun game-read ()
+    (let ((cmd (read-from-string
+                      (concatenate 'string "(" (read-line) ")"))))
+          (flet ((quote-it (x)
+                            (list 'quote x)))
+              (cons (car cmd) (mapcar #'quote-it (cdr cmd))))))
+;;; eval is dangerous as any lisp command could be called
+(defun game-eval (sexp)
+    (if (member (car sexp) *allowed-commands*)
+        (eval sexp)
+       '(i d not know that command.)))
+;;; format output string
+(defun game-print (lst)
+    (princ (coerce (tweak-text (coerce (string-trim "() " 
+                                                     (prin1-to-string lst))
+                                        'list) 
+                                t 
+                                nil) 
+                    'string)) 
+    (fresh-line))
+;;;  game-print helper function
+(defun tweak-text (lst caps lit) 
+    (when lst 
+    (let ((item (car lst))
+          (rest (cdr lst)))
+    (cond ((eq item #\space) (cons item (tweak-text rest caps lit)))
+          ((member item '(#\! #\? #\.)) (cons item (tweak-text rest t lit))) 
+          ((eq item #\") (tweak-text rest caps (not lit))) 
+           (lit (cons item (tweak-text rest nil lit))) 
+          ((or caps lit) (cons (char-upcase item) (tweak-text rest nil lit))) 
+          (t (cons (char-downcase item) (tweak-text rest nil nil)))))))
+
 ;;; find key in list
 (defun describe-location (location nodes)
     (cadr (assoc location nodes)))
@@ -55,10 +98,10 @@
 
 (defun pickup (object)
     (cond ((member object
-                   (objects-at *location* *objects* *object-location*))
+                   (objects-at *location* *objects* *object-locations*))
            (push (list object 'body) *object-locations*)
             `(your are now carring the ,object))
            (t '(you cannot get that.))))
 
 (defun inventory ()
-    (cons 'items- (objects-at 'body *objects* *objects-locations*)))
+    (cons 'items- (objects-at 'body *objects* *object-locations*)))

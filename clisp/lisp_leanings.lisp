@@ -103,6 +103,9 @@
 (progn (prin1 "this") (prin1 "is") (prin1 "a") (prin1 "test"))
 =>
 "this""is""a""test"
+// dont output string just return is as parameter
+(prin1-to-string) 
+(print-to-string)
 
 (print '3)      => 3        An integer
 (print '3.4)    => 3.4      An float
@@ -135,3 +138,9 @@ Nice to meet you, Bob O'Malley
 
 // print writes objects in such a way that the can be always "read" 
 // back into ther internal representation
+
+// are equal
+'foo 
+(quote foo)
+
+// coerce is split into pars
