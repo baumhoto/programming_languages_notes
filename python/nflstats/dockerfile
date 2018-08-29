@@ -1,0 +1,15 @@
+FROM python:2.7.15-alpine3.8
+
+WORKDIR /usr/src/app
+
+RUN pip install --no-cache-dir nflgame
+
+# currently need tom modify update_sched otherwise data from 2018 cant be requested
+RUN sed -i 's/cur_year+1/cur_year+2/g' /usr/local/lib/python2.7/site-packages/nflgame/update_sched.py
+
+COPY nfl_game_per_week_rating.py ./
+
+# RUN python /usr/local/lib/python2.7/site-packages/nflgame/update_sched.py --year 2017
+RUN python /usr/local/lib/python2.7/site-packages/nflgame/update_sched.py --year 2018
+
+CMD [ "python", "./nfl_game_per_week_rating.py" ]
